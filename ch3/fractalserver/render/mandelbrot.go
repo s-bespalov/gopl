@@ -5,12 +5,12 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"io"
 	"math/cmplx"
-	"os"
 )
 
 // Mandelbrot renders mandelbrot fractal to output
-func Mandelbrot(ix float64, iy float64, izoom int) {
+func Mandelbrot(out io.Writer, ix float64, iy float64, izoom int) {
 	const (
 		width, height = 1024, 1024
 	)
@@ -27,10 +27,10 @@ func Mandelbrot(ix float64, iy float64, izoom int) {
 		}
 	}
 	img = supersampling(img)
-	if izoom > 1 {
-		img = zoom(img, izoom)
-	}
-	png.Encode(os.Stdout, img) // NOTE: ignoring errors
+	//if izoom > 1 {
+	img = zoom(img, izoom)
+	//}
+	png.Encode(out, img) // NOTE: ignoring errors
 }
 
 func mandelbrot(z complex128) color.Color {
@@ -84,20 +84,25 @@ func zoom(img *image.RGBA, zoom int) *image.RGBA {
 	r := image.NewRGBA(img.Bounds())
 	w := img.Bounds().Dx()
 	h := img.Bounds().Dy()
-	xstart := (w - int(w/zoom)) / 2
-	ystart := (h - int(h/zoom)) / 2
+	xstart := (w - w/zoom) / 2
+	ystart := (h - h/zoom) / 2
 	counterx, countery := 0, 0
 	for xr := 0; xr < w; xr++ {
+		ycurrent := ystart
+		countery = 0
 		for yr := 0; yr < h; yr++ {
-			r.Set(xr, yr, img.At(xstart, ystart))
-			counterx++
-			if counterx == zoom {
-				xstart++
+			r.Set(xr, yr, img.At(xstart, ycurrent))
+			//log.Print(xstart, ycurrent, img.At(xstart, ystart))
+			countery++
+			if countery >= zoom {
+				ycurrent++
+				countery = 0
 			}
 		}
-		countery++
-		if countery == zoom {
-			ystart++
+		counterx++
+		if counterx >= zoom {
+			xstart++
+			counterx = 0
 		}
 	}
 	return r
