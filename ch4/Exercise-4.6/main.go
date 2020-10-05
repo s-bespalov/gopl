@@ -11,8 +11,8 @@ func spacesquash(s []byte) []byte {
 	k, i := 0, 0
 	for i < len(s) {
 		r, rl := utf8.DecodeRune(s[i:])
-		if i > 0 && unicode.IsSpace(r) {
-			if s[k-1] != '\x20' {
+		if unicode.IsSpace(r) {
+			if k == 0 || s[k-1] != '\x20' {
 				s[k] = '\x20'
 				k++
 			}
@@ -28,6 +28,6 @@ func spacesquash(s []byte) []byte {
 }
 
 func main() {
-	data := "It\n is\t\u12e4  \v⽏\t⽹\v ⾧⾯a\vtest"
+	data := "\n\tIt\n is\t\u12e4  \v⽏\t⽹\v ⾧⾯a\vtest"
 	fmt.Println(string(spacesquash([]byte(data))))
 }
