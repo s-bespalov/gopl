@@ -63,5 +63,10 @@ func main() {
 	fmt.Println(s)
 	s = x.DifferenceWith(c)
 	fmt.Println(s)
+	fmt.Println("Exercise 6.4 test")
+	elems := s.Elems()
+	fmt.Println(elems)
+	elems = c.Elems()
+	fmt.Println(elems)
 
 }

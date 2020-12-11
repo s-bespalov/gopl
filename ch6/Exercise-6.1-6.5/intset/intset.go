@@ -150,3 +150,21 @@ func (s *IntSet) DifferenceWith(s2 *IntSet) *IntSet {
 	}
 	return s3
 }
+
+// Exercise 6.4
+
+// Elems returns a slice containing the elements of the set
+func (s *IntSet) Elems() []int {
+	var r []int
+	for i, word := range s.words {
+		if word == 0 {
+			continue
+		}
+		for j := 0; j < 64; j++ {
+			if word&(1<<j) != 0 {
+				r = append(r, 64*i+j)
+			}
+		}
+	}
+	return r
+}
