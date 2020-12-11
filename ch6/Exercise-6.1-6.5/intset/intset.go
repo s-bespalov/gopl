@@ -3,23 +3,24 @@ package intset
 import (
 	"bytes"
 	"fmt"
+	"math/bits"
 )
 
 // An IntSet is a set of small non-negative integers.
 // Its zero value represents the empty set.
 type IntSet struct {
-	words []uint64
+	words []uint
 }
 
 // Has reports whether the set contains the non-negative value x.
 func (s *IntSet) Has(x int) bool {
-	word, bit := x/64, uint(x%64)
+	word, bit := x/bits.UintSize, uint(x%bits.UintSize)
 	return word < len(s.words) && s.words[word]&(1<<bit) != 0
 }
 
 // Add adds the non-negative value x to the set.
 func (s *IntSet) Add(x int) {
-	word, bit := x/64, uint(x%64)
+	word, bit := x/bits.UintSize, uint(x%bits.UintSize)
 	for word >= len(s.words) {
 		s.words = append(s.words, 0)
 	}
@@ -45,12 +46,12 @@ func (s *IntSet) String() string {
 		if word == 0 {
 			continue
 		}
-		for j := 0; j < 64; j++ {
+		for j := 0; j < bits.UintSize; j++ {
 			if word&(1<<uint(j)) != 0 {
 				if buf.Len() > len("{") {
 					buf.WriteByte(' ')
 				}
-				fmt.Fprintf(&buf, "%d", 64*i+j)
+				fmt.Fprintf(&buf, "%d", bits.UintSize*i+j)
 			}
 		}
 	}
@@ -67,7 +68,7 @@ func (s *IntSet) Len() int {
 		if word == 0 {
 			continue
 		}
-		for j := 0; j < 64; j++ {
+		for j := 0; j < bits.UintSize; j++ {
 			if word&(1<<uint(j)) != 0 {
 				l++
 			}
@@ -78,7 +79,7 @@ func (s *IntSet) Len() int {
 
 // Remove removes a value from set
 func (s *IntSet) Remove(x int) {
-	word, bit := x/64, uint(x%64)
+	word, bit := x/bits.UintSize, uint(x%bits.UintSize)
 	if word >= len(s.words) {
 		return
 	}
@@ -87,13 +88,13 @@ func (s *IntSet) Remove(x int) {
 
 // Clear clears the set
 func (s *IntSet) Clear() {
-	s.words = make([]uint64, 0)
+	s.words = make([]uint, 0)
 }
 
 // Copy copies the set
 func (s *IntSet) Copy() *IntSet {
 	var y IntSet
-	y.words = make([]uint64, len(s.words))
+	y.words = make([]uint, len(s.words))
 	copy(y.words, s.words)
 	return &y
 }
@@ -160,9 +161,9 @@ func (s *IntSet) Elems() []int {
 		if word == 0 {
 			continue
 		}
-		for j := 0; j < 64; j++ {
+		for j := 0; j < bits.UintSize; j++ {
 			if word&(1<<j) != 0 {
-				r = append(r, 64*i+j)
+				r = append(r, bits.UintSize*i+j)
 			}
 		}
 	}
