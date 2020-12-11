@@ -106,3 +106,47 @@ func (s *IntSet) AddAll(values ...int) {
 		s.Add(x)
 	}
 }
+
+// Exercise 6.3
+
+// IntersectWith returns a set that is a result of intersection of two sets
+func (s *IntSet) IntersectWith(s2 *IntSet) *IntSet {
+	s3 := &IntSet{}
+	for i, word := range s.words {
+		if i >= len(s2.words) {
+			break
+		}
+		word &= s2.words[i]
+		s3.words = append(s3.words, word)
+	}
+	return s3
+}
+
+// SymmetricDifference returns a set that is a symmetric difference of two sets
+func (s *IntSet) SymmetricDifference(s2 *IntSet) *IntSet {
+	s3 := &IntSet{}
+	for i, word := range s.words {
+		if i < len(s2.words) {
+			word ^= s2.words[i]
+		}
+		s3.words = append(s3.words, word)
+	}
+
+	if len(s2.words) > len(s.words) {
+		l2 := len(s.words)
+		s3.words = append(s3.words, s2.words[l2:]...)
+	}
+	return s3
+}
+
+// DifferenceWith returns a set that is a difference of two sets
+func (s *IntSet) DifferenceWith(s2 *IntSet) *IntSet {
+	s3 := &IntSet{}
+	for i, word := range s.words {
+		if i < len(s2.words) {
+			word &^= s2.words[i]
+		}
+		s3.words = append(s3.words, word)
+	}
+	return s3
+}

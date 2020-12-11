@@ -26,6 +26,7 @@ func main() {
 	fmt.Println(x.String())
 	fmt.Println(x)
 
+	fmt.Println("Exercise 6.1 test")
 	fmt.Println(x.Len())
 
 	x.Remove(144)
@@ -41,6 +42,7 @@ func main() {
 	fmt.Println(c)
 	fmt.Println(c.Len())
 
+	fmt.Println("Exercise 6.2 test")
 	x.AddAll(14, 111, 93, 66)
 	c.AddAll(666)
 	fmt.Println(&x)
@@ -48,5 +50,18 @@ func main() {
 
 	fmt.Println(c)
 	fmt.Println(c.Len())
+
+	fmt.Println("Exercise 6.3 test")
+	fmt.Println("Intersect With")
+	c.AddAll(15, 115, 1115, 9999999)
+	x.AddAll(15, 115, 1115)
+	fmt.Println(&x)
+	fmt.Println(c)
+	s := x.IntersectWith(c)
+	fmt.Println(s)
+	s = x.SymmetricDifference(c)
+	fmt.Println(s)
+	s = x.DifferenceWith(c)
+	fmt.Println(s)
 
 }
