@@ -97,3 +97,12 @@ func (s *IntSet) Copy() *IntSet {
 	copy(y.words, s.words)
 	return &y
 }
+
+// Exercise 6.2
+
+// AddAll ads all values to set
+func (s *IntSet) AddAll(values ...int) {
+	for _, x := range values {
+		s.Add(x)
+	}
+}

@@ -40,4 +40,13 @@ func main() {
 
 	fmt.Println(c)
 	fmt.Println(c.Len())
+
+	x.AddAll(14, 111, 93, 66)
+	c.AddAll(666)
+	fmt.Println(&x)
+	fmt.Println(x.Len())
+
+	fmt.Println(c)
+	fmt.Println(c.Len())
+
 }
