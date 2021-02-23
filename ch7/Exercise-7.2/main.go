@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/s-bespalov/gopl/ch7/Exercise-7.3/bytecounter"
+	"github.com/s-bespalov/gopl/ch7/Exercise-7.2/bytecounter"
 )
 
 func main() {
