@@ -1,0 +1,9 @@
+goos: linux
+goarch: amd64
+pkg: github.com/s-bespalov/gopl/ch2/Exercise-2.3-2.5/popcount
+BenchmarkPopCount-12         	94273659	        12.8 ns/op
+BenchmarkPopCountLoop-12     	53772112	        22.1 ns/op
+BenchmarkPopCountShift-12    	21204972	        51.1 ns/op
+BenchmarkPopCountClear-12    	35471684	        33.8 ns/op
+PASS
+ok  	github.com/s-bespalov/gopl/ch2/Exercise-2.3-2.5/popcount	4.824s
