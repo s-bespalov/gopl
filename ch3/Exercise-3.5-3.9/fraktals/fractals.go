@@ -5,8 +5,19 @@ import (
 	"math/cmplx"
 )
 
-// Mandelbrot returns colors of z complex number
-func Mandelbrot(z complex128) color.Color {
+var Mandelbrot Fractal
+
+func init() {
+	Mandelbrot = Fractal{-2, 2, -2, 2, fMandelbrot}
+}
+
+type Fractal struct {
+	Xmin, Xmax, Ymin, Ymax float64
+	F                      func(complex128) color.Color
+}
+
+// fMandelbrot returns colors of z complex number
+func fMandelbrot(z complex128) color.Color {
 	const iterations = 200
 	const contrast = 15
 
