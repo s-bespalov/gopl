@@ -43,36 +43,10 @@ func supersampling(i *image.RGBA) *image.RGBA {
 		for y := 0; y < result.Rect.Size().Y; y++ {
 			ix, iy := x*2, y*2
 			r, g, b, a := i.At(ix, iy).RGBA()
-			/*
-				var r1, g1, b1, a1 uint32
-				if ix+1 < i.Rect.Size().X {
-					r1, g1, b1, a1 = i.At(ix+1, y).RGBA()
-				} else if ix-1 >= 0 {
-					r1, g1, b1, a1 = i.At(ix-1, y).RGBA()
-				} else {
-					r1, g1, b1, a1 = r, g, b, a
-				}
-
-				var r2, g2, b2, a2 uint32
-				if iy+1 < i.Rect.Size().Y {
-					r2, g2, b2, a2 = i.At(ix, iy+1).RGBA()
-				} else if iy-1 >= 0 {
-					r2, g2, b2, a2 = i.At(ix, iy-1).RGBA()
-				} else {
-					r2, g2, b2, a2 = r, g, b, a
-				}
-
-				var r3, g3, b3, a3 uint32
-				if iy+1 < i.Rect.Size().Y && ix+1 < i.Rect.Size().X {
-					r3, g3, b3, a3 = i.At(ix+1, iy+1).RGBA()
-				} else if iy-1 >= 0 && ix-1 >= 0 {
-					r3, g3, b3, a3 = i.At(ix-1, iy-1).RGBA()
-				} else {
-					r3, g3, b3, a3 = r, g, b, a
-				}
-
-				r, g, b, a = (r+r1+r2+r3)/4, (g+g1+g2+g3)/4, (b+b1+b2+b3)/4, (a+a1+a2+a3)/4
-			*/
+			r1, g1, b1, a1 := i.At(ix+1, iy).RGBA()
+			r2, g2, b2, a2 := i.At(ix, iy+1).RGBA()
+			r3, g3, b3, a3 := i.At(ix+1, iy+1).RGBA()
+			r, g, b, a = (r+r1+r2+r3)/4, (g+g1+g2+g3)/4, (b+b1+b2+b3)/4, (a+a1+a2+a3)/4
 			result.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
 		}
 	}
@@ -114,7 +88,7 @@ func main() {
 				}
 			}
 		}
-		render(rw, fraktals.Mandelbrot, 1024, 1024, ox, oy, zoom, q)
+		render(rw, fraktals.MandelbrotColor, 1024, 1024, ox, oy, zoom, q)
 	})
 	log.Fatal(http.ListenAndServe("localhost:8080", nil))
 }
