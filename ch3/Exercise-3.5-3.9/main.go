@@ -63,19 +63,19 @@ func main() {
 		} else {
 			for k, v := range r.Form {
 				if k == "x" {
-					if ox, err = strconv.ParseFloat(v[0], 10); err != nil {
+					if ox, err = strconv.ParseFloat(v[0], 64); err != nil {
 						log.Println("error parsing float parametr:", err)
 						ox = 0
 					}
 				}
 				if k == "y" {
-					if oy, err = strconv.ParseFloat(v[0], 10); err != nil {
+					if oy, err = strconv.ParseFloat(v[0], 64); err != nil {
 						log.Println("error parsing float parametr:", err)
 						oy = 0
 					}
 				}
 				if k == "zoom" {
-					if zoom, err = strconv.ParseFloat(v[0], 10); err != nil {
+					if zoom, err = strconv.ParseFloat(v[0], 64); err != nil {
 						log.Println("error parsing float parametr:", err)
 						zoom = 1
 					}
