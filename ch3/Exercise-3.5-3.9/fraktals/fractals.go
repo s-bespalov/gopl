@@ -2,18 +2,21 @@ package fraktals
 
 import (
 	"image/color"
+	"log"
+	"math"
 	"math/cmplx"
 )
 
 var Mandelbrot Fractal
 var MandelbrotColor Fractal
+var Newton Fractal
 
-var colors []color.Color
+var mdlColors []color.Color
 
 func init() {
 	Mandelbrot = Fractal{-2, 2, -2, 2, fMandelbrot}
 	MandelbrotColor = Fractal{-2, 2, -2, 2, fMandelbrotColor}
-	colors = []color.Color{
+	mdlColors = []color.Color{
 		color.RGBA{66, 30, 15, 255},
 		color.RGBA{25, 7, 26, 255},
 		color.RGBA{9, 1, 47, 255},
@@ -31,6 +34,7 @@ func init() {
 		color.RGBA{153, 87, 0, 255},
 		color.RGBA{106, 52, 3, 255},
 	}
+	Newton = Fractal{-5, 5, -5, 5, fNewton}
 }
 
 type Fractal struct {
@@ -55,13 +59,40 @@ func fMandelbrot(z complex128) color.Color {
 
 func fMandelbrotColor(z complex128) color.Color {
 	const iterations = 200
-	const contrast = 15
 
 	var v complex128
 	for n := uint8(0); n < iterations; n++ {
 		v = v*v + z
 		if cmplx.Abs(v) > 2 {
-			return colors[int(n)%len(colors)]
+			return mdlColors[int(n)%len(mdlColors)]
+		}
+	}
+	return color.Black
+}
+
+func fNewton(z complex128) color.Color {
+	const iterations = 40
+
+	for n := uint8(0); n < iterations; n++ {
+		v := z
+		z = z - ((cmplx.Pow(z, 4) - 1) / (4 * cmplx.Pow(z, 3)))
+		if cmplx.Abs(z-v) < 0.1 {
+			contrast := uint8(255 - (n * 6))
+			r := int(cmplx.Phase(z) / (math.Pi / 4))
+			if r == 0 {
+				return color.RGBA{contrast, 0, 0, 0xff}
+			}
+			if r == 1 || r == 2 {
+				return color.RGBA{0, contrast, 0, 0xff}
+			}
+			if r >= 3 || r <= -3 {
+				return color.RGBA{0, 0, contrast, 0xff}
+			}
+			if r == -1 || r == -2 {
+				return color.RGBA{contrast, contrast, 0, 0xff}
+			}
+			log.Print(r)
+			return color.White
 		}
 	}
 	return color.Black

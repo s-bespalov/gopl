@@ -53,41 +53,52 @@ func supersampling(i *image.RGBA) *image.RGBA {
 	return result
 }
 
-func main() {
-	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
-		var ox, oy float64
-		zoom := 1.
-		q := false
-		if err := r.ParseForm(); err != nil {
-			log.Println(err)
-		} else {
-			for k, v := range r.Form {
-				if k == "x" {
-					if ox, err = strconv.ParseFloat(v[0], 64); err != nil {
-						log.Println("error parsing float parametr:", err)
-						ox = 0
-					}
+func parseFractalPrms(r *http.Request) (ox, oy, zoom float64, q bool) {
+	zoom = 1.
+	if err := r.ParseForm(); err != nil {
+		log.Println(err)
+	} else {
+		for k, v := range r.Form {
+			if k == "x" {
+				if ox, err = strconv.ParseFloat(v[0], 64); err != nil {
+					log.Println("error parsing float parametr:", err)
+					ox = 0
 				}
-				if k == "y" {
-					if oy, err = strconv.ParseFloat(v[0], 64); err != nil {
-						log.Println("error parsing float parametr:", err)
-						oy = 0
-					}
+			}
+			if k == "y" {
+				if oy, err = strconv.ParseFloat(v[0], 64); err != nil {
+					log.Println("error parsing float parametr:", err)
+					oy = 0
 				}
-				if k == "zoom" {
-					if zoom, err = strconv.ParseFloat(v[0], 64); err != nil {
-						log.Println("error parsing float parametr:", err)
-						zoom = 1
-					}
+			}
+			if k == "zoom" {
+				if zoom, err = strconv.ParseFloat(v[0], 64); err != nil {
+					log.Println("error parsing float parametr:", err)
+					zoom = 1
 				}
-				if k == "q" {
-					if q, err = strconv.ParseBool(v[0]); err != nil {
-						log.Println("error parsing bool parametr:", err)
-						q = false
-					}
+			}
+			if k == "q" {
+				if q, err = strconv.ParseBool(v[0]); err != nil {
+					log.Println("error parsing bool parametr:", err)
+					q = false
 				}
 			}
 		}
+	}
+	return
+}
+
+func main() {
+	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
+		ox, oy, zoom, q := parseFractalPrms(r)
+		render(rw, fraktals.Mandelbrot, 1024, 1024, ox, oy, zoom, q)
+	})
+	http.HandleFunc("/newton", func(rw http.ResponseWriter, r *http.Request) {
+		ox, oy, zoom, q := parseFractalPrms(r)
+		render(rw, fraktals.Newton, 1024, 1024, ox, oy, zoom, q)
+	})
+	http.HandleFunc("/mdcolor", func(rw http.ResponseWriter, r *http.Request) {
+		ox, oy, zoom, q := parseFractalPrms(r)
 		render(rw, fraktals.MandelbrotColor, 1024, 1024, ox, oy, zoom, q)
 	})
 	log.Fatal(http.ListenAndServe("localhost:8080", nil))
