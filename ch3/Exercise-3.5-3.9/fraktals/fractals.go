@@ -10,6 +10,7 @@ import (
 var Mandelbrot Fractal
 var MandelbrotColor Fractal
 var Newton Fractal
+var NewtonBW Fractal
 
 var mdlColors []color.Color
 
@@ -35,6 +36,7 @@ func init() {
 		color.RGBA{106, 52, 3, 255},
 	}
 	Newton = Fractal{-5, 5, -5, 5, fNewton}
+	NewtonBW = Fractal{-5, 5, -5, 5, fNewtonbw}
 }
 
 type Fractal struct {
@@ -93,6 +95,20 @@ func fNewton(z complex128) color.Color {
 			}
 			log.Print(r)
 			return color.White
+		}
+	}
+	return color.Black
+}
+
+func fNewtonbw(z complex128) color.Color {
+	const iterations = 40
+
+	for n := uint8(0); n < iterations; n++ {
+		v := z
+		z = z - ((z*z*z*z)-1)/(4*z*z*z)
+		if cmplx.Abs(z-v) < 0.1 {
+			contrast := uint8(255 - (n * 6))
+			return color.Gray{contrast}
 		}
 	}
 	return color.Black
