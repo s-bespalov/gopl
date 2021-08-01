@@ -11,6 +11,7 @@ var Mandelbrot Fractal
 var MandelbrotColor Fractal
 var Newton Fractal
 var NewtonBW Fractal
+var Newton64 Fractal
 
 var mdlColors []color.Color
 
@@ -37,6 +38,7 @@ func init() {
 	}
 	Newton = Fractal{-5, 5, -5, 5, fNewton}
 	NewtonBW = Fractal{-5, 5, -5, 5, fNewtonbw}
+	Newton64 = Fractal{-5, 5, -5, 5, fNewton64}
 }
 
 type Fractal struct {
@@ -107,6 +109,50 @@ func fNewtonbw(z complex128) color.Color {
 		v := z
 		z = z - ((z*z*z*z)-1)/(4*z*z*z)
 		if cmplx.Abs(z-v) < 0.1 {
+			contrast := uint8(255 - (n * 6))
+			return color.Gray{contrast}
+		}
+	}
+	return color.Black
+}
+
+func fNewton64(z complex128) color.Color {
+	// dont work correctly
+	zr, zi := real(complex64(z)), imag(complex64(z))
+	const iterations = 40
+	for n := uint8(0); n < iterations; n++ {
+		vr, vi := zr, zi
+
+		tmpr, tmpi := Pow(zr, zi, 4)
+		tr := tmpr.(float32)
+		ti := tmpi.(float32)
+		tmpr, tmpi = Sub(tr, ti, float32(1), float32(0))
+		tr = tmpr.(float32)
+		ti = tmpi.(float32)
+
+		tmpr, tmpi = Pow(zr, zi, 3)
+		br := tmpr.(float32)
+		bi := tmpi.(float32)
+		tmpr, tmpi = Mul(float32(4), float32(0), br, bi)
+		br = tmpr.(float32)
+		bi = tmpi.(float32)
+
+		tmpr, tmpi = Div(tr, ti, br, bi)
+		tr = tmpr.(float32)
+		ti = tmpi.(float32)
+
+		tmpr, tmpi = Sub(zr, zi, tr, ti)
+		zr = tmpr.(float32)
+		zi = tmpi.(float32)
+
+		tmpr, tmpi = Sub(zr, zi, vr, vi)
+		vr = tmpr.(float32)
+		vi = tmpi.(float32)
+
+		tmpr = Abs(vr, vi)
+		vr = tmpr.(float32)
+
+		if vr < 0.1 {
 			contrast := uint8(255 - (n * 6))
 			return color.Gray{contrast}
 		}

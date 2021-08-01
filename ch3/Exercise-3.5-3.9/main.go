@@ -105,5 +105,9 @@ func main() {
 		ox, oy, zoom, q := parseFractalPrms(r)
 		render(rw, fraktals.NewtonBW, 1024, 1024, ox, oy, zoom, q)
 	})
+	http.HandleFunc("/newton64", func(rw http.ResponseWriter, r *http.Request) {
+		ox, oy, zoom, q := parseFractalPrms(r)
+		render(rw, fraktals.Newton64, 1024, 1024, ox, oy, zoom, q)
+	})
 	log.Fatal(http.ListenAndServe("localhost:8080", nil))
 }
