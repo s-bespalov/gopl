@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"unicode"
+	"unicode/utf8"
+)
 
 // Exercise-4.3
 func reverse(s *[6]int) {
@@ -39,6 +43,27 @@ func duplicates(s []string) []string {
 	return s[:i]
 }
 
+// Exercise-4.6 squashSpace squashes each run of adjacent Unicode spaces into a single ASCII space.
+func squashSpace(s []byte) []byte {
+	i, j := 0, 0
+	for i < len(s) && j < len(s) {
+		r, l := utf8.DecodeRune(s[j:])
+		j += l
+		if unicode.IsSpace(r) {
+			r = 32
+			for j < len(s) {
+				w, wl := utf8.DecodeRune(s[j:])
+				if !unicode.IsSpace(w) {
+					break
+				}
+				j += wl
+			}
+		}
+		i += utf8.EncodeRune(s[i:i+l], r)
+	}
+	return s[:i]
+}
+
 func main() {
 	a := [...]int{0, 1, 2, 3, 4, 5}
 	reverse(&a)
@@ -55,5 +80,11 @@ func main() {
 	// duplicates
 	ds := []string{"milk", "coffee", "coffee", "coffee", "sugar", "sugar", "cacao", "tea", "tea", "tea"}
 	fmt.Println("strings with duplicates:", ds)
-	fmt.Println("duplicates remover", duplicates(ds))
+	fmt.Println("duplicates remover", duplicates(ds)) //wr
+	fmt.Println('-')
+
+	// squash spaces
+	data := "\n\tIt\n is\t\u12e4\u00A0  \v⽏\t⽹\v ⾧⾯a\vtest, \u3000да\n\r"
+	fmt.Println(data)
+	fmt.Println(string(squashSpace([]byte(data))))
 }
