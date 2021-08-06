@@ -26,6 +26,19 @@ func rotate(s []int, n int) {
 	}
 }
 
+// Exercise-4.5 duplicates function eliminates adjacent duplicates in a []string slice
+func duplicates(s []string) []string {
+	i, j := 0, 0
+	for i < len(s) && j < len(s) {
+		s[i] = s[j]
+		i++
+		for j < len(s) && s[j] == s[i-1] {
+			j++
+		}
+	}
+	return s[:i]
+}
+
 func main() {
 	a := [...]int{0, 1, 2, 3, 4, 5}
 	reverse(&a)
@@ -38,4 +51,9 @@ func main() {
 	fmt.Printf("%v rotated by %d :\n", c, 10)
 	rotate(c[:], 10)
 	fmt.Printf("%v\n", c)
+
+	// duplicates
+	ds := []string{"milk", "coffee", "coffee", "coffee", "sugar", "sugar", "cacao", "tea", "tea", "tea"}
+	fmt.Println("strings with duplicates:", ds)
+	fmt.Println("duplicates remover", duplicates(ds))
 }
