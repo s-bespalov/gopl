@@ -64,6 +64,30 @@ func squashSpace(s []byte) []byte {
 	return s[:i]
 }
 
+// Exercise-4.7 reverse []byte slice that represents a UTF-8-encoded string in place
+func reverseUTF8Bytes(s []byte) {
+	reverseBytes(s)
+	for i := 0; i < len(s); i++ {
+		if s[i]&128 > 0 {
+			for j := i + 1; j < len(s); j++ {
+				if s[j]&192 != 192 {
+					continue
+				}
+				reverseBytes(s[i : j+1])
+				i = j
+				break
+			}
+		}
+	}
+}
+
+// reverseBytes []byte slice in place
+func reverseBytes(s []byte) {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
+}
+
 func main() {
 	a := [...]int{0, 1, 2, 3, 4, 5}
 	reverse(&a)
@@ -87,4 +111,10 @@ func main() {
 	data := "\n\tIt\n is\t\u12e4\u00A0  \v⽏\t⽹\v ⾧⾯a\vtest, \u3000да\n\r"
 	fmt.Println(data)
 	fmt.Println(string(squashSpace([]byte(data))))
+
+	// reverse UTF-8 bytes
+	d := []byte("For reverse ⽏⽹ лалала")
+	fmt.Println(string(d))
+	reverseUTF8Bytes([]byte(d))
+	fmt.Println(string(d))
 }
