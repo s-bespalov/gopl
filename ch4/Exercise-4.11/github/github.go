@@ -6,6 +6,9 @@ import (
 	"fmt"
 )
 
+const api = "https://api.github.com"
+const readIssues = api + "/repos/%s/%s/issues/%s"
+
 var auth string
 
 // set OAuth username and access token

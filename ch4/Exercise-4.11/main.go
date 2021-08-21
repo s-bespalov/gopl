@@ -4,20 +4,23 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 )
-
-var t string
-var u string
 
 const creditsFile = "credits"
 const creditsFolder = "tmp"
 const creditsPath = creditsFolder + "/" + creditsFile
 
+var t string
+var u string
+var m string
+
 func init() {
 	flag.StringVar(&u, "u", "", "user name")
 	flag.StringVar(&t, "t", "", "github access token")
+	flag.StringVar(&m, "m", "read", "mode, read/update/create/close")
 }
 
 func readCredits() {
@@ -58,5 +61,14 @@ func main() {
 		saveCredits()
 	}
 
-	fmt.Println(u, t)
+	switch m {
+	case "read":
+		fmt.Println("Reading issue", flag.Arg(0))
+		issue := flag.Arg(0)
+		owner := flag.Arg(1)
+		repo := flag.Arg(3)
+		if issue == "" || owner == "" || repo == "" {
+			log.Fatalln("Input should have owner, repo, issue number. current:", owner, repo, issue)
+		}
+	}
 }
