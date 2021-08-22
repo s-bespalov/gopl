@@ -46,5 +46,4 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 		return nil, err
 	}
 	return &result, nil
-
 }

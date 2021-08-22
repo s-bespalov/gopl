@@ -7,6 +7,9 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/s-bespalov/gopl/ch4/Exercise-4.11/github"
 )
 
 const creditsFile = "credits"
@@ -20,7 +23,7 @@ var m string
 func init() {
 	flag.StringVar(&u, "u", "", "user name")
 	flag.StringVar(&t, "t", "", "github access token")
-	flag.StringVar(&m, "m", "read", "mode, read/update/create/close")
+	flag.StringVar(&m, "m", "search", "mode, search/read/update/create/close")
 }
 
 func readCredits() {
@@ -44,6 +47,43 @@ func saveCredits() {
 
 }
 
+func read() {
+	fmt.Println("Reading issue", flag.Arg(0))
+	issue := flag.Arg(0)
+	owner := flag.Arg(1)
+	repo := flag.Arg(3)
+	if issue == "" || owner == "" || repo == "" {
+		log.Fatalln("Arguments should have owner, repo, issue number. current:", owner, repo, issue)
+	}
+}
+
+func search() {
+	result, err := github.SearchIssues(flag.Args())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%d issues:\n", result.TotalCount)
+	fmt.Println("less than a month old:")
+	for _, item := range result.Items {
+		if time.Since(item.CreatedAt).Hours() < 720 {
+			fmt.Printf("#%-5d %9.9s %.55s\n", item.Number, item.User.Login, item.Title)
+		}
+	}
+	fmt.Println("less than a year old:")
+	for _, item := range result.Items {
+		sc := time.Since(item.CreatedAt).Hours()
+		if sc >= 720 && sc < 8760 {
+			fmt.Printf("#%-5d %9.9s %.55s\n", item.Number, item.User.Login, item.Title)
+		}
+	}
+	fmt.Println("more than a year old:")
+	for _, item := range result.Items {
+		if time.Since(item.CreatedAt).Hours() >= 8760 {
+			fmt.Printf("#%-5d %9.9s %.55s\n", item.Number, item.User.Login, item.Title)
+		}
+	}
+}
+
 func main() {
 	flag.Parse()
 	if u == "" || t == "" {
@@ -63,12 +103,8 @@ func main() {
 
 	switch m {
 	case "read":
-		fmt.Println("Reading issue", flag.Arg(0))
-		issue := flag.Arg(0)
-		owner := flag.Arg(1)
-		repo := flag.Arg(3)
-		if issue == "" || owner == "" || repo == "" {
-			log.Fatalln("Input should have owner, repo, issue number. current:", owner, repo, issue)
-		}
+		read()
+	case "search":
+		search()
 	}
 }
