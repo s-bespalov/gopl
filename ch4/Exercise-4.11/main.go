@@ -13,8 +13,8 @@ import (
 )
 
 const creditsFile = "credits"
-const creditsFolder = "tmp"
-const creditsPath = creditsFolder + "/" + creditsFile
+const tmpFolder = "tmp"
+const creditsPath = tmpFolder + "/" + creditsFile
 
 var t string
 var u string
@@ -38,7 +38,7 @@ func readCredits() {
 }
 
 func saveCredits() {
-	os.Mkdir(creditsFolder, 0777)
+	os.Mkdir(tmpFolder, 0777)
 	data := fmt.Sprintf("%s\n%s", t, u)
 	err := ioutil.WriteFile(creditsPath, []byte(data), 0777)
 	if err != nil {
@@ -49,12 +49,17 @@ func saveCredits() {
 
 func read() {
 	fmt.Println("Reading issue", flag.Arg(0))
-	issue := flag.Arg(0)
-	owner := flag.Arg(1)
-	repo := flag.Arg(3)
+	owner := flag.Arg(0)
+	repo := flag.Arg(1)
+	issue := flag.Arg(2)
 	if issue == "" || owner == "" || repo == "" {
 		log.Fatalln("Arguments should have owner, repo, issue number. current:", owner, repo, issue)
 	}
+	_, err := github.ReadIssue(flag.Args())
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Panicln("all is ok")
 }
 
 func search() {
@@ -100,6 +105,7 @@ func main() {
 	} else {
 		saveCredits()
 	}
+	github.OAuth(u, t)
 
 	switch m {
 	case "read":
