@@ -45,32 +45,23 @@ func OAuth(u, t string) {
 func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 	q := url.QueryEscape(strings.Join(terms, " "))
 	url := IssueUrl + "?per_page=100&q=" + q
-	t := struct{}(IssuesSearchResult{})
-	r, err := get(url, t)
+	r, err := get(url, &IssuesSearchResult{})
 	if err != nil {
 		return nil, err
 	}
-	result := r.(IssuesSearchResult)
-
-	return &result, nil
+	result := r.(*IssuesSearchResult)
+	return result, nil
 }
 
 func ReadIssue(params []string) (*Issue, error) {
 	escapeParams(&params)
 	url := fmt.Sprintf(readIssues, params[0], params[1], params[2])
-	resp, err := http.Get(url)
+	r, err := get(url, &Issue{})
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("read issue failed: %s", resp.Status)
-	}
-	var result Issue
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, err
-	}
-	return &result, nil
+	result := r.(*Issue)
+	return result, nil
 }
 
 func escapeParams(params *[]string) {
@@ -80,7 +71,7 @@ func escapeParams(params *[]string) {
 	}
 }
 
-func get(url string, r *struct{}) (*interface{}, error) {
+func get(url string, r interface{}) (interface{}, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err

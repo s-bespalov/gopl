@@ -5,7 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "go Exercise 11 search",
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+        },
+        {
+            "name": "Ex4.11 search",
             "type": "go",
             "request": "launch",
             "mode": "auto",
@@ -13,19 +20,20 @@
             "args": ["repo:golang/go", "is:open", "is:open", "is:open"]
         },
         {
-            "name": "go Exercise 11 read",
+            "name": "Ex4.11 read",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/ch4/Exercise-4.11",
-            "args": ["-m","read", "golang", "go", "47709"]
+            "args": ["-m","read", "golang", "go", "47896"]
         },
         {
-            "name": "Launch Package",
+            "name": "Ex4.11 read private issue",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${fileDirname}",
-        }
+            "program": "${workspaceFolder}/ch4/Exercise-4.11",
+            "args": ["-m","read", "s-bespalov", "forapitest", "1"]
+        },
     ]
 }

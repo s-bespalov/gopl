@@ -48,18 +48,14 @@ func saveCredits() {
 }
 
 func read() {
-	fmt.Println("Reading issue", flag.Arg(0))
-	owner := flag.Arg(0)
-	repo := flag.Arg(1)
-	issue := flag.Arg(2)
-	if issue == "" || owner == "" || repo == "" {
-		log.Fatalln("Arguments should have owner, repo, issue number. current:", owner, repo, issue)
+	if flag.Arg(0) == "" || flag.Arg(1) == "" || flag.Arg(2) == "" {
+		log.Fatalln("Arguments should have owner, repo, issue number. current:", flag.Args())
 	}
-	_, err := github.ReadIssue(flag.Args())
+	issue, err := github.ReadIssue(flag.Args())
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Panicln("all is ok")
+	fmt.Printf("Number: #%d\nAuthor: %s\nTitle:%s\nBody:\n%s\n", issue.Number, issue.User.Login, issue.Title, issue.Body)
 }
 
 func search() {
