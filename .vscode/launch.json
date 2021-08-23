@@ -5,19 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${fileDirname}",
-        },
-        {
             "name": "Ex4.11 search",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/ch4/Exercise-4.11",
-            "args": ["repo:golang/go", "is:open", "is:open", "is:open"]
+            "args": ["-m", "search", "repo:golang/go", "is:open", "is:open", "is:open"]
         },
         {
             "name": "Ex4.11 read",
@@ -35,5 +28,14 @@
             "program": "${workspaceFolder}/ch4/Exercise-4.11",
             "args": ["-m","read", "s-bespalov", "forapitest", "1"]
         },
+        {
+            "name": "Ex4.11 update issue",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/ch4/Exercise-4.11",
+            "externalConsole":true,
+            "args": ["-m","update", "s-bespalov", "forapitest", "1"]
+        }
     ]
 }
