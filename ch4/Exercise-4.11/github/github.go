@@ -2,8 +2,10 @@
 package github
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -12,6 +14,7 @@ import (
 
 const api = "https://api.github.com"
 const readIssues = api + "/repos/%s/%s/issues/%s"
+const pathIssues = readIssues
 const assignedIssues = api + "/repos/%s/%s/issues"
 const IssueUrl = api + "/search/issues"
 
@@ -45,7 +48,7 @@ func OAuth(u, t string) {
 func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 	q := url.QueryEscape(strings.Join(terms, " "))
 	url := IssueUrl + "?per_page=100&q=" + q
-	r, err := get(url, &IssuesSearchResult{})
+	r, err := httpHelper(http.MethodGet, url, nil, &IssuesSearchResult{})
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +59,23 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 func ReadIssue(params []string) (*Issue, error) {
 	escapeParams(&params)
 	url := fmt.Sprintf(readIssues, params[0], params[1], params[2])
-	r, err := get(url, &Issue{})
+	r, err := httpHelper(http.MethodGet, url, nil, &Issue{})
+	if err != nil {
+		return nil, err
+	}
+	result := r.(*Issue)
+	return result, nil
+}
+
+func PatchIssue(params []string, issue *Issue) (*Issue, error) {
+	escapeParams(&params)
+	url := fmt.Sprintf(pathIssues, params[0], params[1], params[2])
+	issue = &Issue{Title: issue.Title, Body: issue.Body, State: issue.State}
+	body, err := json.Marshal(issue)
+	if err != nil {
+		return nil, err
+	}
+	r, err := httpHelper(http.MethodPatch, url, bytes.NewBuffer(body), &Issue{})
 	if err != nil {
 		return nil, err
 	}
@@ -71,25 +90,28 @@ func escapeParams(params *[]string) {
 	}
 }
 
-func get(url string, r interface{}) (interface{}, error) {
-	req, err := http.NewRequest("GET", url, nil)
+func httpHelper(method, url string, body io.Reader, response interface{}) (interface{}, error) {
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
+	}
+	if method == http.MethodPatch {
+		req.Header.Add("Accept", "application/vnd.github.v3+json")
 	}
 	if auth[0] != "" && auth[1] != "" {
 		req.SetBasicAuth(auth[0], auth[1])
 	}
 	c := http.Client{}
-	resp, err := c.Do(req)
+	r, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("search query failed: %s", resp.Status)
+	defer r.Body.Close()
+	if r.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("search query failed: %s", r.Status)
 	}
-	if err := json.NewDecoder(resp.Body).Decode(r); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(response); err != nil {
 		return nil, err
 	}
-	return r, nil
+	return response, nil
 }

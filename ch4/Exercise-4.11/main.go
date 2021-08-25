@@ -29,7 +29,7 @@ func init() {
 	flag.StringVar(&user, "u", "", "user name")
 	flag.StringVar(&token, "t", "", "github access token")
 	flag.StringVar(&mode, "m", "", "mode, search/read/update/create/close")
-	flag.StringVar(&editor, "e", "geany", "editor, default nano")
+	flag.StringVar(&editor, "e", "gedit", "editor, default gedit")
 }
 
 func readCredits() {
@@ -89,13 +89,21 @@ func update() {
 	checkParams()
 	issue, err := github.ReadIssue(flag.Args())
 	check(err)
-	f := fmt.Sprintf("%s%d%d.json", tmpFolder, time.Now().Unix(), issue.Number)
 	data, err := json.MarshalIndent(issue, jsonPrefix, jsonIndent)
 	check(err)
+
+	f := fmt.Sprintf("%s%d%d.json", tmpFolder, time.Now().Unix(), issue.Number)
 	err = ioutil.WriteFile(f, data, 0644)
 	check(err)
 	openEditor(f)
-	fmt.Println("Editor closed")
+
+	data, err = ioutil.ReadFile(f)
+	check(err)
+	json.Unmarshal(data, &issue)
+
+	_, err = github.PatchIssue(flag.Args(), issue)
+	check(err)
+	fmt.Println("Issue updated")
 }
 
 func checkParams() {
@@ -111,6 +119,23 @@ func openEditor(f string) {
 	check(err)
 	_, err = p.Wait()
 	check(err)
+}
+
+func clearTmpFiles() {
+	ds, err := os.ReadDir(tmpFolder)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return
+	}
+	for _, e := range ds {
+		if e.Name() == creditsFile {
+			continue
+		}
+		err = os.RemoveAll(e.Name())
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+	}
 }
 
 func check(e error) {
@@ -145,4 +170,6 @@ func main() {
 	case "update":
 		update()
 	}
+
+	clearTmpFiles()
 }
