@@ -21,12 +21,12 @@ const IssueUrl = api + "/search/issues"
 var auth [2]string
 
 type Issue struct {
-	Number    int
-	HTMLURL   string `json:"html_url"`
-	Title     string
-	State     string
-	Body      string
-	User      *User
+	Number    int       `json:"number"`
+	HTMLURL   string    `json:"html_url"`
+	Title     string    `json:"title"`
+	State     string    `json:"state"`
+	Body      string    `json:"body"`
+	User      *User     `json:"user"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -70,7 +70,6 @@ func ReadIssue(params []string) (*Issue, error) {
 func PatchIssue(params []string, issue *Issue) (*Issue, error) {
 	escapeParams(&params)
 	url := fmt.Sprintf(pathIssues, params[0], params[1], params[2])
-	issue = &Issue{Title: issue.Title, Body: issue.Body, State: issue.State}
 	body, err := json.Marshal(issue)
 	if err != nil {
 		return nil, err

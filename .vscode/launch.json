@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/ch4/Exercise-4.11",
-            "args": ["-m", "search", "repo:golang/go", "is:open", "is:open", "is:open"]
+            "args": ["-m", "search", "repo:golang/go", "is:open", "is:open", "is:open"],
         },
         {
             "name": "Ex4.11 read",
@@ -34,8 +34,15 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/ch4/Exercise-4.11",
-            "externalConsole":true,
-            "args": ["-m","update", "s-bespalov", "forapitest", "1"]
-        }
+            "args": ["-m=update", "s-bespalov", "forapitest", "1"]
+        },
+        {
+          "name": "Ex4.11 update issue win10",
+          "type": "go",
+          "request": "launch",
+          "mode": "auto",
+          "program": "${workspaceFolder}/ch4/Exercise-4.11",
+          "args": ["-m=update","-e=notepad.exe", "s-bespalov", "forapitest", "1"]
+      }
     ]
 }

@@ -131,7 +131,7 @@ func clearTmpFiles() {
 		if e.Name() == creditsFile {
 			continue
 		}
-		err = os.RemoveAll(e.Name())
+		err = os.Remove(tmpFolder + e.Name())
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
