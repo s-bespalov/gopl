@@ -37,6 +37,14 @@
             "args": ["-m=update", "s-bespalov", "forapitest", "1"]
         },
         {
+            "name": "Ex4.11 create issue",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/ch4/Exercise-4.11",
+            "args": ["-m=create", "s-bespalov", "forapitest"]
+        },
+        {
           "name": "Ex4.11 update issue win10",
           "type": "go",
           "request": "launch",

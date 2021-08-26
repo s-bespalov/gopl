@@ -54,7 +54,6 @@ func saveCredits() {
 }
 
 func read() {
-	checkParams()
 	issue, err := github.ReadIssue(flag.Args())
 	check(err)
 	fmt.Printf("Number: #%d\nAuthor: %s\nTitle:%s\nBody:\n%s\n", issue.Number, issue.User.Login, issue.Title, issue.Body)
@@ -86,7 +85,6 @@ func search() {
 }
 
 func update() {
-	checkParams()
 	issue, err := github.ReadIssue(flag.Args())
 	check(err)
 	data, err := json.MarshalIndent(issue, jsonPrefix, jsonIndent)
@@ -106,10 +104,22 @@ func update() {
 	fmt.Println("Issue updated")
 }
 
-func checkParams() {
-	if flag.Arg(0) == "" || flag.Arg(1) == "" || flag.Arg(2) == "" {
-		log.Fatalln("Arguments should have owner, repo, issue number. current:", flag.Args())
-	}
+func create() {
+	issue := &github.Issue{}
+	data, err := json.MarshalIndent(issue, jsonPrefix, jsonIndent)
+	check(err)
+
+	f := fmt.Sprintf("%s%d%d.json", tmpFolder, time.Now().Unix(), issue.Number)
+	err = ioutil.WriteFile(f, data, 0644)
+	check(err)
+	openEditor(f)
+
+	data, err = ioutil.ReadFile(f)
+	check(err)
+	json.Unmarshal(data, &issue)
+	_, err = github.PostIssue(flag.Args(), issue)
+	check(err)
+	fmt.Println("Issue created")
 }
 
 func openEditor(f string) {
@@ -169,6 +179,8 @@ func main() {
 		search()
 	case "update":
 		update()
+	case "create":
+		create()
 	}
 
 	clearTmpFiles()

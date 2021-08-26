@@ -13,10 +13,10 @@ import (
 )
 
 const api = "https://api.github.com"
-const readIssues = api + "/repos/%s/%s/issues/%s"
-const pathIssues = readIssues
-const assignedIssues = api + "/repos/%s/%s/issues"
-const IssueUrl = api + "/search/issues"
+const readIssue = api + "/repos/%s/%s/issues/%s"
+const pathIssue = readIssue
+const postIssue = api + "/repos/%s/%s/issues"
+const searchIssueUrl = api + "/search/issues"
 
 var auth [2]string
 
@@ -47,7 +47,7 @@ func OAuth(u, t string) {
 
 func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 	q := url.QueryEscape(strings.Join(terms, " "))
-	url := IssueUrl + "?per_page=100&q=" + q
+	url := searchIssueUrl + "?per_page=100&q=" + q
 	r, err := httpHelper(http.MethodGet, url, nil, &IssuesSearchResult{})
 	if err != nil {
 		return nil, err
@@ -58,7 +58,10 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 
 func ReadIssue(params []string) (*Issue, error) {
 	escapeParams(&params)
-	url := fmt.Sprintf(readIssues, params[0], params[1], params[2])
+	if len(params) < 3 {
+		return nil, fmt.Errorf("read issuue, missed params")
+	}
+	url := fmt.Sprintf(readIssue, params[0], params[1], params[2])
 	r, err := httpHelper(http.MethodGet, url, nil, &Issue{})
 	if err != nil {
 		return nil, err
@@ -69,12 +72,33 @@ func ReadIssue(params []string) (*Issue, error) {
 
 func PatchIssue(params []string, issue *Issue) (*Issue, error) {
 	escapeParams(&params)
-	url := fmt.Sprintf(pathIssues, params[0], params[1], params[2])
+	if len(params) < 3 {
+		return nil, fmt.Errorf("path issuue, missed params")
+	}
+	url := fmt.Sprintf(pathIssue, params[0], params[1], params[2])
 	body, err := json.Marshal(issue)
 	if err != nil {
 		return nil, err
 	}
 	r, err := httpHelper(http.MethodPatch, url, bytes.NewBuffer(body), &Issue{})
+	if err != nil {
+		return nil, err
+	}
+	result := r.(*Issue)
+	return result, nil
+}
+
+func PostIssue(params []string, issue *Issue) (*Issue, error) {
+	escapeParams(&params)
+	if len(params) < 2 {
+		return nil, fmt.Errorf("post issuue, missed params")
+	}
+	url := fmt.Sprintf(postIssue, params[0], params[1])
+	body, err := json.Marshal(issue)
+	if err != nil {
+		return nil, err
+	}
+	r, err := httpHelper(http.MethodPost, url, bytes.NewBuffer(body), &Issue{})
 	if err != nil {
 		return nil, err
 	}
@@ -94,9 +118,7 @@ func httpHelper(method, url string, body io.Reader, response interface{}) (inter
 	if err != nil {
 		return nil, err
 	}
-	if method == http.MethodPatch {
-		req.Header.Add("Accept", "application/vnd.github.v3+json")
-	}
+	req.Header.Add("Accept", "application/vnd.github.v3+json")
 	if auth[0] != "" && auth[1] != "" {
 		req.SetBasicAuth(auth[0], auth[1])
 	}
@@ -107,7 +129,9 @@ func httpHelper(method, url string, body io.Reader, response interface{}) (inter
 	}
 	defer r.Body.Close()
 	if r.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("search query failed: %s", r.Status)
+		if method != http.MethodPost && r.StatusCode != http.StatusCreated {
+			return nil, fmt.Errorf("search query failed: %s", r.Status)
+		}
 	}
 	if err := json.NewDecoder(r.Body).Decode(response); err != nil {
 		return nil, err
