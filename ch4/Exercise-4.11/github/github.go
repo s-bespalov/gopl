@@ -88,6 +88,20 @@ func PatchIssue(params []string, issue *Issue) (*Issue, error) {
 	return result, nil
 }
 
+func CloseIssue(params []string) (*Issue, error) {
+	escapeParams(&params)
+	if len(params) < 3 {
+		return nil, fmt.Errorf("path issuue, missed params")
+	}
+	url := fmt.Sprintf(pathIssue, params[0], params[1], params[2])
+	r, err := httpHelper(http.MethodPatch, url, bytes.NewBuffer([]byte("{\"state\":\"close\"}")), &Issue{})
+	if err != nil {
+		return nil, err
+	}
+	result := r.(*Issue)
+	return result, nil
+}
+
 func PostIssue(params []string, issue *Issue) (*Issue, error) {
 	escapeParams(&params)
 	if len(params) < 2 {

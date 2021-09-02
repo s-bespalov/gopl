@@ -104,6 +104,12 @@ func update() {
 	fmt.Println("Issue updated")
 }
 
+func close() {
+	_, err := github.CloseIssue(flag.Args())
+	check(err)
+	fmt.Println("Issue closed")
+}
+
 func create() {
 	issue := &github.Issue{}
 	data, err := json.MarshalIndent(issue, jsonPrefix, jsonIndent)
@@ -181,6 +187,8 @@ func main() {
 		update()
 	case "create":
 		create()
+	case "close":
+		close()
 	}
 
 	clearTmpFiles()
