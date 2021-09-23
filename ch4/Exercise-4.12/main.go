@@ -8,11 +8,13 @@ import (
 )
 
 func main() {
-	_, comics, err := xkcd.DownloadAll()
+	_, comics, err := xkcd.DownloadAll(5)
 	check(err)
 	for _, c := range *comics {
 		fmt.Printf("%d\t%s\n", c.Num, c.Title)
 	}
+	err = xkcd.SaveAll(comics)
+	check(err)
 }
 
 func check(e error) {

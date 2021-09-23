@@ -4,13 +4,15 @@ package xkcd
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 const (
-	JsonUrl    = "https://xkcd.com/%d/info.0.json"
-	ComicUrl   = "https://xkcd.com/%d"
-	ComicCount = 5
+	JsonUrl  = "https://xkcd.com/%d/info.0.json"
+	ComicUrl = "https://xkcd.com/%d"
+	ComicDir = "comics"
 )
 
 type Comic struct {
@@ -23,8 +25,8 @@ type Comic struct {
 // DownloadAll downloads all comics from xkcd.com
 // returns a number of downloaded comics,
 // slice of Comic objects and error
-func DownloadAll() (count int, result *[]Comic, e error) {
-	cs := make([]Comic, ComicCount)
+func DownloadAll(comicCount int) (count int, result *[]Comic, e error) {
+	cs := make([]Comic, comicCount)
 	result = &cs
 	for i := range *result {
 		url := fmt.Sprintf(JsonUrl, i+1)
@@ -46,4 +48,33 @@ func DownloadAll() (count int, result *[]Comic, e error) {
 	return
 }
 
+func Save(c *Comic, p string) error {
+	data, err := json.MarshalIndent(c, " ", "")
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(p, data, 0666)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
+func SaveAll(cs *[]Comic) error {
+	err := os.RemoveAll(ComicDir)
+	if err != nil {
+		return err
+	}
+	err = os.Mkdir(ComicDir, 0777)
+	if err != nil {
+		return err
+	}
+	for _, c := range *cs {
+		p := fmt.Sprintf("%s/%d.json", ComicDir, c.Num)
+		err = Save(&c, p)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
