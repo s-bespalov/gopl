@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 )
 
 const (
@@ -77,4 +78,28 @@ func SaveAll(cs *[]Comic) error {
 		}
 	}
 	return nil
+}
+
+func ReadAll() (*[]Comic, error) {
+	files, err := os.ReadDir(ComicDir)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]Comic, 0, len(files))
+	for _, e := range files {
+		if e.Type().IsRegular() && strings.Contains(e.Name(), "json") {
+			p := fmt.Sprintf("%s/%s", ComicDir, e.Name())
+			data, err := ioutil.ReadFile(p)
+			if err != nil {
+				return nil, err
+			}
+			var c Comic
+			err = json.Unmarshal(data, &c)
+			if err != nil {
+				return nil, err
+			}
+			result = append(result, c)
+		}
+	}
+	return &result, nil
 }
