@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/s-bespalov/gopl/ch2/surface/render"
+	"github.com/s-bespalov/gopl/ch3/surface/render"
 )
 
 func main() {

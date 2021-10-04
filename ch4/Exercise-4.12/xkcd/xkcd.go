@@ -103,3 +103,16 @@ func ReadAll() (*[]Comic, error) {
 	}
 	return &result, nil
 }
+
+func Search(cs *[]Comic, num int, title, content string) *[]Comic {
+	results := make([]Comic, 0)
+	for _, c := range *cs {
+		f := c.Num == num
+		f = f || title != "" && strings.Contains(strings.ToLower(c.Title), title)
+		f = f || content != "" && strings.Contains(strings.ToLower(c.Transcript), content)
+		if f {
+			results = append(results, c)
+		}
+	}
+	return &results
+}

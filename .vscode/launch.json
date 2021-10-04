@@ -9,6 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
+            "cwd": "${workspaceFolder}/ch4/Exercise-4.11",
             "program": "${workspaceFolder}/ch4/Exercise-4.11",
             "args": ["-m", "search", "repo:golang/go", "is:open", "is:open", "is:open"],
         },
@@ -51,14 +52,22 @@
           "mode": "auto",
           "program": "${workspaceFolder}/ch4/Exercise-4.11",
           "args": ["-m=update","-e=notepad.exe", "s-bespalov", "forapitest", "1"]
-      },
-      {
-        "name": "Ex4.11 close issue",
-        "type": "go",
-        "request": "launch",
-        "mode": "auto",
-        "program": "${workspaceFolder}/ch4/Exercise-4.11",
-        "args": ["-m=close", "s-bespalov", "forapitest", "1"]
-    }
+        },
+        {
+            "name": "Ex4.11 close issue",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/ch4/Exercise-4.11",
+            "args": ["-m=close", "s-bespalov", "forapitest", "1"]
+        }, 
+        {
+            "name": "Ex4.12 search",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/ch4/Exercise-4.12",
+            "args": ["search", "num:2"]
+        }, 
     ]
 }
