@@ -27,5 +27,13 @@
             "program": "${fileDirname}",
             "args": ["search", "title:island"]
         },
+        {
+            "name": "Ex4.12 search by conten",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+            "args": ["search", "content:virus"]
+        },
     ]
 }

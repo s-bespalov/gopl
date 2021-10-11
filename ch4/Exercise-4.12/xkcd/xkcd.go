@@ -26,23 +26,26 @@ type Comic struct {
 // DownloadAll downloads all comics from xkcd.com
 // returns a number of downloaded comics,
 // slice of Comic objects and error
-func DownloadAll(comicCount int) (count int, result *[]Comic, e error) {
+func DownloadAll(comicCount int) (count int, result *[]Comic, e []error) {
 	cs := make([]Comic, comicCount)
+	e = make([]error, 0)
 	result = &cs
 	for i := range *result {
 		url := fmt.Sprintf(JsonUrl, i+1)
 		resp, err := http.Get(url)
 		if err != nil {
-			e = err
-			return
+			e = append(e, err)
+			continue
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
-			e = fmt.Errorf("download comics error: %s, URL: %s", resp.Status, url)
-			return
+			err = fmt.Errorf("download comics error: %s, URL: %s", resp.Status, url)
+			e = append(e, err)
+			continue
 		}
-		if e = json.NewDecoder(resp.Body).Decode(&cs[i]); err != nil {
-			return
+		if err := json.NewDecoder(resp.Body).Decode(&cs[i]); err != nil {
+			e = append(e, err)
+			continue
 		}
 		count += 1
 	}
@@ -72,6 +75,9 @@ func SaveAll(cs *[]Comic) error {
 	}
 	for _, c := range *cs {
 		p := fmt.Sprintf("%s/%d.json", ComicDir, c.Num)
+		if c.Num == 0 && c.Title == "" && c.Transcript == "" {
+			continue
+		}
 		err = Save(&c, p)
 		if err != nil {
 			return err

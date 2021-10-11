@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 
@@ -18,8 +19,14 @@ func main() {
 
 	switch flag.Arg(0) {
 	case "download":
-		_, comics, err = xkcd.DownloadAll(5)
+		count, err := strconv.Atoi(flag.Arg(1))
 		check(err)
+		_, comics, errors := xkcd.DownloadAll(count)
+		if len(errors) > 0 {
+			for _, err = range errors {
+				fmt.Fprintln(os.Stderr, err)
+			}
+		}
 		err = xkcd.SaveAll(comics)
 		check(err)
 		fmt.Printf("%d comics downloaded and saved\n", len(*comics))
@@ -50,7 +57,7 @@ func getSearchTerms() (num int, title, content string) {
 		if t[0] == "title" {
 			title = strings.ToLower(t[1])
 		}
-		if t[1] == "content" {
+		if t[0] == "content" {
 			content = strings.ToLower(t[1])
 		}
 	}
