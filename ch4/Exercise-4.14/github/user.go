@@ -1,6 +1,7 @@
 package github
 
 type User struct {
-	login string
-	url   string `json:html_url`
+	Login string
+	Url   string `json:html_url`
+	Id    int
 }
