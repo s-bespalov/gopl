@@ -2,34 +2,30 @@ package main
 
 import "html/template"
 
-var milestoneList = template.Must(template.New("milestonelist").Parse(`
+var usersList = template.Must(template.New("userlist").Parse(`
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Milestones</title>
+        <title>users</title>
     </head>
     <body>
         <table>
             <tr style="text-align: center;">
                 <th><a href="/?owner={{.Owner}}&repo={{.Repo}}">Issues</a></th>
-                <th>Milestones</th>
-                <th><a href="/users?owner={{.Owner}}&repo={{.Repo}}">Users</a></th>
+                <th><a href="/milestones?owner={{.Owner}}&repo={{.Repo}}">Milestones</a></th>
+                <th>Users</th>
             </tr>
         </table>
-        <h1>{{.Count}} Milestones</h1>
+        <h1>{{.Count}} Users</h1>
         <table>
             <tr style="text-align: left">
                 <th>Id</th>
-                <th>State</th>
-                <th>Title</th>
-                <th>Description</th>
+                <th>User</th>
             </tr>
 			{{range .Items}}
             <tr>
                 <td><a href="{{.URL}}">{{.Id}}</a></td>
-                <td>{{.State}}</td>
-                <td><a href="{{.URL}}">{{.Title}}</a></td>
-                <td>{{.Description}}</td>
+                <td><a href="{{.URL}}">{{.Login}}</a></td>
             </tr>
 			{{end}}
         </table>

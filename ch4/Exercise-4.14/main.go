@@ -42,6 +42,8 @@ func main() {
 		var issuesData struct {
 			Count int
 			Items *[]github.Issue
+			Owner string
+			Repo  string
 		}
 		issuesData.Count = len(*issues)
 		issuesData.Items = issues
@@ -58,10 +60,33 @@ func main() {
 		var milestonesData struct {
 			Count int
 			Items *[]github.Milestone
+			Owner string
+			Repo  string
 		}
 		milestonesData.Count = len(*milestones)
 		milestonesData.Items = milestones
 		if err := milestoneList.Execute(rw, milestonesData); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			internalError(rw)
+		}
+	})
+	http.HandleFunc("/users", func(rw http.ResponseWriter, r *http.Request) {
+		getIssues("golang", "go")
+		if users == nil {
+			internalError(rw)
+			return
+		}
+		var usersData struct {
+			Count int
+			Items *[]github.User
+			Owner string
+			Repo  string
+		}
+		usersData.Count = len(*users)
+		usersData.Items = users
+		usersData.Owner = owner
+		usersData.Repo = repo
+		if err := usersList.Execute(rw, usersData); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			internalError(rw)
 		}
