@@ -32,9 +32,29 @@ func internalError(rw http.ResponseWriter) {
 	rw.Write([]byte("500 - server error"))
 }
 
+func parseQuery(req *http.Request) (err error) {
+	if err = req.ParseForm(); err != nil {
+		return 
+	}
+	var o, r string
+	for k, v := range req.Form {
+		if k == "owner" {
+			o = v[0]
+		}
+		if k == "repo" {
+			r = v[0]
+		}
+	}
+	getIssues(o, r)
+	return nil
+}
+
 func main() {
 	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
-		getIssues("golang", "go")
+		if err := parseQuery(r); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return
+		}
 		if issues == nil {
 			internalError(rw)
 			return
@@ -47,12 +67,17 @@ func main() {
 		}
 		issuesData.Count = len(*issues)
 		issuesData.Items = issues
+		issuesData.Owner = owner
+		issuesData.Repo = repo
 		if err := issueList.Execute(rw, issuesData); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	})
 	http.HandleFunc("/milestones", func(rw http.ResponseWriter, r *http.Request) {
-		getIssues("golang", "go")
+		if err := parseQuery(r); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return
+		}
 		if milestones == nil {
 			internalError(rw)
 			return
@@ -65,13 +90,18 @@ func main() {
 		}
 		milestonesData.Count = len(*milestones)
 		milestonesData.Items = milestones
+		milestonesData.Owner = owner
+		milestonesData.Repo = repo
 		if err := milestoneList.Execute(rw, milestonesData); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			internalError(rw)
 		}
 	})
 	http.HandleFunc("/users", func(rw http.ResponseWriter, r *http.Request) {
-		getIssues("golang", "go")
+		if err := parseQuery(r); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return
+		}
 		if users == nil {
 			internalError(rw)
 			return
