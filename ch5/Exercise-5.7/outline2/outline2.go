@@ -28,13 +28,21 @@ var depth int
 
 func StartElement(n *html.Node) {
 	if n.Type == html.ElementNode {
-		fmt.Printf("%*s<%s>\n", depth*2, "", n.Data)
-		depth++
+		fmt.Printf("%*s<%s", depth*2, "", n.Data)
+		for _, a := range n.Attr {
+			fmt.Printf(" %s='%s'", a.Key, a.Val)
+		}
+		if n.FirstChild != nil && n.FirstChild.Type == html.ElementNode {
+			fmt.Print(">\n")
+			depth++
+		} else {
+			fmt.Print("/>\n")
+		}
 	}
 }
 
 func EndElement(n *html.Node) {
-	if n.Type == html.ElementNode {
+	if n.Type == html.ElementNode && (n.FirstChild != nil && n.FirstChild.Type == html.ElementNode) {
 		depth--
 		fmt.Printf("%*s</%s>\n", depth*2, "", n.Data)
 	}
