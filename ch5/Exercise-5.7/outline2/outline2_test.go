@@ -2,47 +2,65 @@ package outline2
 
 import (
 	"bytes"
-	"io"
+	"io/ioutil"
 	"net/http"
-	"os"
 	"testing"
 
 	"golang.org/x/net/html"
 )
 
-func TestOutline2(t *testing.T) {
-	resp, ok := getTestWebPage(t)
-	if !ok {
-		return
+func TestGolangOrg(t *testing.T) {
+	testOutline2("https://golang.org", t)
+}
+
+func TestHabrCom(t *testing.T) {
+	testOutline2("https://habr.com", t)
+}
+
+func TestGithubCom(t *testing.T) {
+	testOutline2("https://github.com", t)
+}
+
+func TestFacebook(t *testing.T) {
+	testOutline2("https://facebook.com", t)
+}
+
+func TestUnsplashCom(t *testing.T) {
+	testOutline2("https://unsplash.com", t)
+}
+
+func TestYaRu(t *testing.T) {
+	testOutline2("https://ya.ru", t)
+}
+
+func testOutline2(page string, t *testing.T) {
+	resp, err := http.Get(page)
+	if err != nil {
+		t.Errorf("Outline2: cant reach %s", page)
 	}
-	n, err := html.Parse(resp)
+	if resp.StatusCode != 200 {
+		t.Errorf("Outline2: http error, status code: %d, url: %s", resp.StatusCode, page)
+	}
+	// poarse site
+	n, err := html.Parse(resp.Body)
 	if err != nil {
 		t.Errorf("Error when parsing web page %v", err)
 		return
 	}
-
 	buf := bytes.Buffer{}
-	ForEachNode(n, StartElement, EndElement, &buf, 0)
-	//fmt.Println(string(buf.Bytes()))
+	ForEachNode(n, StartElement, EndElement, &buf)
+	output := buf.String()
 
-	n, err = html.Parse(&buf)
+	// parse the output of ForEachNode
+	n2, err := html.Parse(&buf)
 	if err != nil {
 		t.Errorf("Outline2, parsing ForEachNode result failed: %v", err)
 	}
-	ForEachNode(n, StartElement, EndElement, os.Stdout, 0)
-
-}
-
-func getTestWebPage(t *testing.T) (io.ReadCloser, bool) {
-	url := "https://habr.com"
-	resp, err := http.Get(url)
-	if err != nil {
-		t.Errorf("Outline2: cant reach %s", url)
-		return nil, false
+	buf2 := bytes.Buffer{}
+	ForEachNode(n2, StartElement, EndElement, &buf2)
+	if buf2.String() != output {
+		t.Errorf(`the output of ForEachNode on the result of ForEachNode should be the same, file test_fail_buff.html should be equal test_fail_buff2.html, url:%s`, page)
+		ioutil.WriteFile("test_fail_buff.html", []byte(output), 0644)
+		ioutil.WriteFile("test_fail_buff2.html", buf2.Bytes(), 0644)
 	}
-	if resp.StatusCode != 200 {
-		t.Errorf("Outline2: http error, status code: %d, url: %s", resp.StatusCode, url)
-		return nil, false
-	}
-	return resp.Body, true
 }

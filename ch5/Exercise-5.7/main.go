@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	body, ok := getWebPage()
+	body, ok := getWebPage(os.Args[1])
 	if !ok {
 		return
 	}
@@ -20,11 +20,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	outline2.ForEachNode(n, outline2.StartElement, outline2.EndElement, os.Stdout, 0)
+	outline2.ForEachNode(n, outline2.StartElement, outline2.EndElement, os.Stdout)
 }
 
-func getWebPage() (io.ReadCloser, bool) {
-	url := "https://habr.com"
+func getWebPage(url string) (io.ReadCloser, bool) {
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Errorf("Outline2: cant reach %s", url)
