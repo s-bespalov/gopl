@@ -12,13 +12,13 @@ func TestExpand(t *testing.T) {
 	tmplt := fmt.Sprintf(s, "$name", "$name", "$time")
 	expected := fmt.Sprintf(s, "Mark", "Mark", fmt.Sprint(utime))
 	r := Expand(tmplt, func(s string) string {
-		if s == "name" {
-			return "Mark"
-		}
 		if s == "time" {
 			return fmt.Sprint(utime)
 		}
-		return ""
+		if s == "name" {
+			return "Mark"
+		}
+		return "$" + s
 	})
 	if r != expected {
 		t.Errorf("should be equal:\n%s\n%s\n", expected, r)
