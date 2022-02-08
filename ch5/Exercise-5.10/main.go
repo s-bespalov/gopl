@@ -22,6 +22,23 @@ var prereqs = map[string][]string{
 	"programming languages": {"data structures", "computer organization"},
 }
 
+var prereqs2 = map[string]map[string]bool{
+	"algorithms": {"data structures": true},
+	"calculus":   {"linear algebra": true},
+	"compilers": {
+		"data structures":       true,
+		"formal languages":      true,
+		"computer organization": true,
+	},
+	"data structures":       {"discrete math": true},
+	"databases":             {"data structures": true},
+	"discrete math":         {"intro to programming": true},
+	"formal languages":      {"discrete math": true},
+	"networks":              {"operating systems": true},
+	"operating systems":     {"data structures": true, "computer organization": true},
+	"programming languages": {"data structures": true, "computer organization": true},
+}
+
 func main() {
 	result := toposort.TopoSort(prereqs)
 	for _, n := range result {
