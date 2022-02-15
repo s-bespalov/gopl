@@ -23,3 +23,26 @@ func TopoSort(m map[string][]string) []string {
 	visitAll(keys)
 	return order
 }
+
+func TopoSortMaps(m map[string]map[string]bool) []string {
+	var order []string
+	seen := make(map[string]bool)
+	var visitAll func(items map[string]bool)
+	visitAll = func(items map[string]bool) {
+		for item := range items {
+			if !seen[item] {
+				seen[item] = true
+				visitAll(m[item])
+				order = append(order, item)
+			}
+		}
+	}
+	for item, reqs := range m {
+		if !seen[item] {
+			visitAll(reqs)
+			order = append(order, item)
+			seen[item] = true
+		}
+	}
+	return order
+}

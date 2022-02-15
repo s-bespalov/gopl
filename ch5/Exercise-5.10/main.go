@@ -3,6 +3,7 @@ package main
 import (
 	"com/github/s-bespalov/gopl/ch5/Exercise-5.10/toposort"
 	"fmt"
+	"strings"
 )
 
 var prereqs = map[string][]string{
@@ -41,6 +42,11 @@ var prereqs2 = map[string]map[string]bool{
 
 func main() {
 	result := toposort.TopoSort(prereqs)
+	for _, n := range result {
+		fmt.Println(n)
+	}
+	fmt.Println(strings.Repeat("=", 10))
+	result = toposort.TopoSortMaps(prereqs2)
 	for _, n := range result {
 		fmt.Println(n)
 	}
