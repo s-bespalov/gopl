@@ -1,6 +1,9 @@
 package toposort
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 func TopoSort(m map[string][]string) []string {
 	var order []string
@@ -24,25 +27,38 @@ func TopoSort(m map[string][]string) []string {
 	return order
 }
 
-func TopoSortMaps(m map[string]map[string]bool) []string {
+func TopoSortMaps(m map[string]map[string]bool) ([]string, error) {
 	var order []string
 	seen := make(map[string]bool)
-	var visitAll func(items map[string]bool)
-	visitAll = func(items map[string]bool) {
+	var loop map[string]bool
+	var visitAll func(items map[string]bool) error
+	visitAll = func(items map[string]bool) error {
 		for item := range items {
+			if loop[item] {
+				err := fmt.Errorf("found a circle")
+				return err
+			} else {
+				loop[item] = true
+			}
 			if !seen[item] {
 				seen[item] = true
-				visitAll(m[item])
+				if err := visitAll(m[item]); err != nil {
+					return err
+				}
 				order = append(order, item)
 			}
 		}
+		return nil
 	}
 	for item, reqs := range m {
 		if !seen[item] {
-			visitAll(reqs)
+			loop = map[string]bool{item: true}
+			if err := visitAll(reqs); err != nil {
+				return nil, err
+			}
 			order = append(order, item)
 			seen[item] = true
 		}
 	}
-	return order
+	return order, nil
 }

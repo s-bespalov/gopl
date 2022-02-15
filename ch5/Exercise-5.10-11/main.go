@@ -38,6 +38,7 @@ var prereqs2 = map[string]map[string]bool{
 	"networks":              {"operating systems": true},
 	"operating systems":     {"data structures": true, "computer organization": true},
 	"programming languages": {"data structures": true, "computer organization": true},
+	"linear algebra":        {"calculus": true},
 }
 
 func main() {
@@ -46,7 +47,7 @@ func main() {
 		fmt.Println(n)
 	}
 	fmt.Println(strings.Repeat("=", 10))
-	result = toposort.TopoSortMaps(prereqs2)
+	result, _ = toposort.TopoSortMaps(prereqs2)
 	for _, n := range result {
 		fmt.Println(n)
 	}
