@@ -3,5 +3,5 @@ package main
 import "os"
 
 func main() {
-	breadthFirst(crawl, os.Args[1:])
+	crawlSites(os.Args[1:])
 }
