@@ -101,3 +101,58 @@ func TestCopy(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestIntersect(t *testing.T) {
+	set := []int{77, 88, 99, 11}
+	set2 := []int{5, 17, 99, 77, 99}
+	result := "{77 99}"
+	intset, intset2 := &IntSet{}, &IntSet{}
+	intset.AddAll(set...)
+	intset2.AddAll(set2...)
+	intset.IntersectWith(intset2)
+	if intset.String() != result {
+		t.Fail()
+	}
+}
+
+func TestDifferenceWith(t *testing.T) {
+	set := []int{77, 88, 99, 11}
+	set2 := []int{5, 17, 99, 77, 99}
+	result := "{11 88}"
+	intset, intset2 := &IntSet{}, &IntSet{}
+	intset.AddAll(set...)
+	intset2.AddAll(set2...)
+	intset.DifferenceWith(intset2)
+	if intset.String() != result {
+		t.Fail()
+	}
+}
+
+func TestSymmetricDifference(t *testing.T) {
+	set := []int{77, 88, 99, 11}
+	set2 := []int{5, 17, 99, 77, 99, 777}
+	result := "{5 11 17 88 777}"
+	intset, intset2 := &IntSet{}, &IntSet{}
+	intset.AddAll(set...)
+	intset2.AddAll(set2...)
+	intset.SymmetricDifference(intset2)
+	if intset.String() != result {
+		t.Fail()
+	}
+}
+
+func TestElem(t *testing.T) {
+	set := []int{77, 88, 99, 11}
+	result := []int{11, 77, 88, 99}
+	intset := &IntSet{}
+	intset.AddAll(set...)
+	elems := intset.Elems()
+	if len(elems) != len(result) {
+		t.FailNow()
+	}
+	for i := range elems {
+		if elems[i] != result[i] {
+			t.FailNow()
+		}
+	}
+}

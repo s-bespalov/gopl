@@ -105,3 +105,50 @@ func (s *IntSet) AddAll(items ...int) {
 		s.Add(item)
 	}
 }
+
+// Exercise 6.3
+func (s *IntSet) IntersectWith(t *IntSet) {
+	if len(s.words) > len(t.words) {
+		s.words = s.words[:len(t.words)]
+	}
+	for i := range s.words {
+		s.words[i] &= t.words[i]
+	}
+}
+
+func (s *IntSet) DifferenceWith(t *IntSet) {
+	for i := range s.words {
+		if i >= len(t.words) {
+			break
+		}
+		s.words[i] &= ^t.words[i]
+	}
+}
+
+func (s *IntSet) SymmetricDifference(t *IntSet) {
+	for i := range s.words {
+		if i >= len(t.words) {
+			break
+		}
+		s.words[i] ^= t.words[i]
+	}
+	if len(s.words) < len(t.words) {
+		s.words = append(s.words, t.words[len(s.words):]...)
+	}
+}
+
+// Exercise 6.4
+func (s *IntSet) Elems() []int {
+	r := []int{}
+	for i, word := range s.words {
+		if word == 0 {
+			continue
+		}
+		for j := 0; j < uintSize; j++ {
+			if word&(1<<uint(j)) != 0 {
+				r = append(r, i*uintSize+j)
+			}
+		}
+	}
+	return r
+}
